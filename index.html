@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>security.txt Validator — RFC 9116 Checker and Generator</title>
+  <meta name="description" content="Free security.txt validator (RFC 9116). Paste a file to check Contact, Expires, Encryption, Canonical, Policy and more, detect a PGP clearsign wrapper, and generate a correct file. Runs entirely in your browser.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://securitytxt.hbenali.ovh/">
+
+  <!-- Security (connect-src is none: the page makes no network call; static hosting: no custom HTTP headers, so CSP/referrer are set here; X-Frame-Options/X-Content-Type-Options need a real header and aren't achievable via meta) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="security.txt Validator — RFC 9116 Checker and Generator">
+  <meta property="og:description" content="Validate a security.txt against RFC 9116 and generate a correct one. Nothing leaves your browser.">
+  <meta property="og:url" content="https://securitytxt.hbenali.ovh/">
+  <meta property="og:site_name" content="security.txt Validator">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://securitytxt.hbenali.ovh/favicon.svg">
+  <meta property="og:image:type" content="image/svg+xml">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="security.txt Validator — RFC 9116 Checker and Generator">
+  <meta name="twitter:description" content="Validate a security.txt against RFC 9116 and generate a correct one. Nothing leaves your browser.">
+  <meta name="twitter:image" content="https://securitytxt.hbenali.ovh/favicon.svg">
+
+  <!-- SVG Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0c1218" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f4efe4" media="(prefers-color-scheme: light)">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="security.txt Validator">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "url": "https://securitytxt.hbenali.ovh/",
+        "name": "security.txt Validator",
+        "description": "Free security.txt validator and generator following RFC 9116.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://securitytxt.hbenali.ovh/?domain={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "WebApplication",
+        "name": "security.txt Validator",
+        "url": "https://securitytxt.hbenali.ovh/",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any",
+        "description": "Validate a pasted security.txt against RFC 9116 and generate a correct file.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    ]
+  }
+  </script>
+
+
+  <link rel="preload" href="/fonts/big-shoulders-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/newsreader-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="/theme.js"></script>
+  <link rel="stylesheet" href="/site.css">
+</head>
+
+<body>
+<a class="skip" href="#pasteInput">Skip to the tool</a>
+<header class="hero">
+  <div class="wrap">
+    <h1 class="display">
+      <span class="line"><span>security.txt</span></span>
+      <span class="line"><span>validate &amp; build</span></span>
+    </h1>
+    <p class="lead">Check a <strong>security.txt</strong> against RFC 9116, or generate a correct one. Everything runs in your browser.</p>
+  </div>
+</header>
+
+<main>
+  <section class="block wrap" aria-labelledby="valTitle">
+    <h2 class="block-title" id="valTitle">Validate a security.txt</h2>
+    <p class="block-note">Paste the full contents of the file. Nothing is uploaded: the page makes no network request.</p>
+
+    <div class="paste-box">
+      <label for="pasteInput">security.txt contents</label>
+      <textarea id="pasteInput" spellcheck="false" autocomplete="off" placeholder="Contact: mailto:security@example.com&#10;Expires: 2027-12-31T23:59:59Z&#10;Preferred-Languages: en, fr&#10;Canonical: https://example.com/.well-known/security.txt"></textarea>
+      <div class="actions pad">
+        <button class="btn" id="validateBtn" type="button">Validate</button>
+        <button class="btn quiet" id="clearPasteBtn" type="button">Clear</button>
+      </div>
+    </div>
+
+    <div class="result-area" id="resultContainer" aria-live="polite">
+      <div class="state empty empty-state" id="placeholderState">
+        <p>Paste a file and click "Validate".<br>You get a line-by-line view and a list of RFC 9116 findings.</p>
+      </div>
+      <div id="resultBox" hidden></div>
+    </div>
+  </section>
+
+  <section class="block wrap" aria-labelledby="fetchTitle">
+    <h2 class="block-title" id="fetchTitle">Get a domain's file</h2>
+    <p class="block-note">RFC 9116 puts the file at <code>/.well-known/security.txt</code> (a legacy copy may sit at <code>/security.txt</code>).</p>
+
+    <div class="field input-group">
+      <label for="domainInput">
+        <span>Domain name</span>
+        <i>example.com</i>
+      </label>
+      <div class="field-row domain-input-wrapper">
+        <input type="text" id="domainInput" placeholder="e.g. example.com" spellcheck="false" autocomplete="off">
+        <button class="btn" id="curlBtn" type="button">Build command</button>
+      </div>
+      <div class="field-error" id="domainError" role="alert"></div>
+    </div>
+
+    <div class="notice">
+      <h3>Why this page does not fetch it for you</h3>
+      <p>A browser may only read another site's file if that site sends CORS headers. Tested in headless Chrome: <strong>github.com, google.com and cloudflare.com sent none, and hbenali.ovh redirects to a host that answers 404</strong>, so every request was blocked. Even where it could work, this page's strict Content Security Policy (<code>connect-src 'none'</code>) cannot allow an arbitrary domain. So the fetch is done with <code>curl</code>, then you paste the output above.</p>
+    </div>
+
+    <div id="curlOut" hidden>
+      <div class="preview-label">Run this in a terminal, then paste the file above</div>
+      <div class="preview cmd" id="curlCmd"></div>
+      <div class="preview-label cmd-label">Legacy location</div>
+      <div class="preview cmd" id="curlLegacy"></div>
+      <p class="provider" id="curlSiblings"></p>
+      <div class="actions pad">
+        <button class="btn quiet" id="copyCurlBtn" type="button">Copy command</button>
+      </div>
+      <p class="provider">The <code>-i</code> flag prints the response headers: RFC 9116 requires HTTPS and <code>Content-Type: text/plain; charset=utf-8</code>, which this page cannot see from pasted text. Remove the header block before pasting.</p>
+    </div>
+  </section>
+
+  <section class="block wrap generator-section" aria-labelledby="genTitle">
+    <h2 class="block-title" id="genTitle">security.txt generator</h2>
+    <p class="block-note">One value per line in the multi-value fields. Publish the result at <code>/.well-known/security.txt</code> over HTTPS.</p>
+    <div class="gen-grid">
+      <div class="gen-row v">
+        <label class="gen-label" for="genContact">Contact (required)</label>
+        <textarea id="genContact" class="short" spellcheck="false" autocomplete="off" placeholder="security@example.com"></textarea>
+        <span class="hint">email addresses become <code>mailto:</code>; also https: and tel: URIs</span>
+      </div>
+      <div class="gen-row">
+        <label class="gen-label" for="genExpires">Expires (required)</label>
+        <input type="text" id="genExpires" spellcheck="false" autocomplete="off">
+        <span class="hint">UTC date-time; defaults to one year ahead (less one day, as RFC 9116 asks for under a year)</span>
+      </div>
+      <div class="gen-row">
+        <label class="gen-label" for="genLang">Preferred-Languages</label>
+        <input type="text" id="genLang" placeholder="en, fr" spellcheck="false" autocomplete="off">
+        <span class="hint">comma-separated language tags, written once</span>
+      </div>
+      <div class="gen-row v">
+        <label class="gen-label" for="genEncryption">Encryption</label>
+        <textarea id="genEncryption" class="short" spellcheck="false" autocomplete="off" placeholder="https://example.com/pgp-key.txt"></textarea>
+        <span class="hint">https:, dns: or openpgp4fpr: URI of a key, never an email address</span>
+      </div>
+      <div class="gen-row v">
+        <label class="gen-label" for="genAck">Acknowledgments</label>
+        <textarea id="genAck" class="short" spellcheck="false" autocomplete="off" placeholder="https://example.com/hall-of-fame"></textarea>
+      </div>
+      <div class="gen-row v">
+        <label class="gen-label" for="genPolicy">Policy</label>
+        <textarea id="genPolicy" class="short" spellcheck="false" autocomplete="off" placeholder="https://example.com/disclosure-policy"></textarea>
+      </div>
+      <div class="gen-row v">
+        <label class="gen-label" for="genHiring">Hiring</label>
+        <textarea id="genHiring" class="short" spellcheck="false" autocomplete="off" placeholder="https://example.com/jobs"></textarea>
+      </div>
+      <div class="gen-row v">
+        <label class="gen-label" for="genCanonical">Canonical</label>
+        <textarea id="genCanonical" class="short" spellcheck="false" autocomplete="off" placeholder="https://example.com/.well-known/security.txt"></textarea>
+        <span class="hint">the https URL(s) where this exact file is served</span>
+      </div>
+      <div class="gen-row v">
+        <label class="gen-label" for="genCsaf">CSAF</label>
+        <textarea id="genCsaf" class="short" spellcheck="false" autocomplete="off" placeholder="https://example.com/.well-known/csaf/provider-metadata.json"></textarea>
+      </div>
+      <div class="field-error" id="genError" role="alert"></div>
+
+      <div>
+        <div class="preview-label">Generated file</div>
+        <div class="preview gen-out" id="genOut" aria-live="polite"></div>
+      </div>
+      <div class="actions">
+        <button id="copyGenBtn" class="btn" type="button">Copy</button>
+        <button id="dlGenBtn" class="btn quiet" type="button">Download security.txt</button>
+        <button id="valGenBtn" class="btn quiet" type="button">Validate it above</button>
+        <button id="resetGenBtn" class="btn quiet" type="button">Reset</button>
+      </div>
+      <p class="provider">Signing (OpenPGP clearsign, recommended by RFC 9116) is not done here: run <code>gpg --clearsign security.txt</code> on the downloaded file.</p>
+    </div>
+  </section>
+</main>
+
+<div class="foot">
+  <footer>
+    <span><strong>RFC 9116</strong>, checked locally in your browser</span>
+    <span>validate a security.txt, build a correct one</span>
+    <a href="https://hbenali.ovh" target="_blank" rel="noopener noreferrer">hbenali.ovh</a>
+  </footer>
+</div>
+
+<script src="/app.js" defer></script>
+</body>
+</html>

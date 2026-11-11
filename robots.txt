@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://securitytxt.hbenali.ovh/sitemap.xml

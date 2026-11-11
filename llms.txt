@@ -1,0 +1,8 @@
+# security.txt Validator
+
+> Free, single-page tool to validate a security.txt file against RFC 9116 and to generate a correct one.
+
+Static site (no backend, no build step, no dependencies, no network calls) at https://securitytxt.hbenali.ovh. Paste a file to check Contact, Expires, Encryption, Acknowledgments, Preferred-Languages, Canonical, Policy, Hiring and CSAF, detect an OpenPGP clearsign wrapper (the signature itself is not verified in the browser), or fill the generator form. The page cannot fetch a domain's file because of CORS; it builds the curl command instead.
+
+## Pages
+- [security.txt Validator](https://securitytxt.hbenali.ovh/): the tool itself. `?domain=example.com` fills the curl helper.
